@@ -10,6 +10,8 @@
 
 @interface ViewController ()
 
+@property (weak, nonatomic) IBOutlet UILabel *mainText;
+
 @end
 
 @implementation ViewController
@@ -17,6 +19,29 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+}
+- (IBAction)dajData:(id)sender {
+    NSString     *urlString = @"https://api.github.com/users/aorzes";
+    NSURL        *url       = [NSURL URLWithString:urlString];
+    NSURLRequest *request   = [NSURLRequest requestWithURL:url];
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *task = [session dataTaskWithRequest:request completionHandler:
+                                  ^(NSData *data, NSURLResponse *response, NSError *error) {
+                                      // get data from php
+                                      NSError *parseError = nil;
+                                      NSDictionary *results = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&parseError];
+                                      if (parseError) {
+                                          NSLog(@"JSONObjectWithData error: %@", parseError);
+                                          return;
+                                      }else{
+                                          NSLog(@"%@", results);
+                                          _mainText.text = [NSString stringWithFormat:@"%@", results];
+                                      }
+                                  }];
+    
+    [task resume];
+    
 }
 
 
